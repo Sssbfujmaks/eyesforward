@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>앞만봐 (Eyes Forward) 시연 영상</title>
+<style>
+  :root { --bg: #0e1116; --fg: #eceeea; --muted: #9aa1a9; --lane: #f2b300; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font-family: "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif; }
+  main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 56px; }
+  .eyebrow { color: var(--muted); font-size: 15px; letter-spacing: .02em; }
+  h1 { margin: 6px 0 4px; font-size: clamp(26px, 4vw, 38px); }
+  p.lead { margin: 0 0 24px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+  video { width: 100%; border-radius: 10px; background: #000; display: block; }
+  .lane { height: 4px; margin: 28px 0 20px;
+          background: repeating-linear-gradient(90deg, var(--lane) 0 48px, transparent 48px 80px); }
+  ul { padding-left: 18px; line-height: 1.9; color: var(--muted); }
+  a { color: var(--lane); }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Pleos Connect 차량용 앱 · 시연 영상 (2분)</div>
+  <h1>앞만봐 (Eyes Forward)</h1>
+  <p class="lead">아이가 벨트를 매야 영상이 켜지고, 풀면 멈춥니다. 차량 신호로 뒷좌석 아이의 안전을 챙기고, 운전자는 앞만 봅니다.</p>
+  <video controls playsinline preload="metadata" src="media/%EC%95%9E%EB%A7%8C%EB%B4%90_%EC%8B%9C%EC%97%B0.mp4"></video>
+  <div class="lane"></div>
+  <ul>
+    <li>왼쪽: 운전석 화면 (Pleos Connect 에뮬레이터, Vehicle SDK · Pleos STT/TTS) · 오른쪽: 뒷좌석 갤럭시탭 실기기</li>
+    <li>2열 벨트·뒷문·기어는 시연용 주입 패널로 입력합니다(Vehicle SDK 콜백과 같은 함수). 부모 음성은 실제 음성 인식입니다.</li>
+    <li>소스 코드 · APK · 실행 방법: <a href="https://github.com/Sssbfujmaks/eyesforward">github.com/Sssbfujmaks/eyesforward</a></li>
+  </ul>
+</main>
+</body>
+</html>
