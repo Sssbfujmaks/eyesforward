@@ -1,0 +1,11 @@
+build/
+.gradle/
+.kotlin/
+local.properties
+node_modules/
+recordings/
+server/events.jsonl
+.DS_Store
+__pycache__/
+*.iml
+.idea/

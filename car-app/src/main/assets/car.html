@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>앞만봐</title>
+<style>
+:root {
+  --bg: #0E1116; --card: #171C24; --line: #222A36; --line2: #1C222C;
+  --fg: #E8ECF2; --sub: #8B95A5; --sub2: #C9D3E0;
+  --ok: #3DDC97; --warn: #FFB547; --bad: #FF6B6B; --info: #6CC4FF; --accent: #2F80ED;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--fg); overflow: hidden; }
+body { font-family: "Pretendard", "Noto Sans KR", sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; font-size: 18px; }
+button { font: inherit; color: inherit; border: 0; cursor: pointer; }
+
+.status { height: 56px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; color: var(--sub); font-size: 20px; border-bottom: 1px solid var(--line2); }
+.status .app { color: var(--fg); font-weight: 700; display: flex; gap: 10px; align-items: center; }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: #555; display: inline-block; }
+.dot.on { background: var(--ok); }
+.mode { padding: 6px 16px; border-radius: 999px; background: #1C2430; color: #9FB3C8; font-size: 18px; display: flex; gap: 10px; align-items: center; }
+.mode.drive { background: #10324A; color: var(--info); }
+.gearbox { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 2px solid currentColor; border-radius: 6px; font-weight: 800; font-size: 16px; }
+
+.main { flex: 1; display: flex; min-height: 0; }
+.body { flex: 1; padding: 18px 18px; display: flex; gap: 16px; min-width: 0; }
+.card { background: var(--card); border-radius: 24px; padding: 24px 26px; border: 1px solid var(--line); }
+.tcard { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; transition: border-color .3s; }
+.tcard.alert { border-color: #6B2A2A; }
+.tcard .top { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.seat { font-size: 17px; color: var(--sub); white-space: nowrap; }
+.name { font-size: 36px; font-weight: 800; }
+.now { font-size: 20px; color: var(--sub2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-size: 17px; font-weight: 700; white-space: nowrap; }
+.pill.ok { background: #12362A; color: var(--ok); } .pill.warn { background: #3A2A10; color: var(--warn); } .pill.bad { background: #3A1616; color: var(--bad); } .pill.mute { background: #222A36; color: #9FB3C8; } .pill.info { background: #10324A; color: var(--info); }
+.batt { display: flex; align-items: center; gap: 14px; }
+.batt b { font-size: 26px; min-width: 70px; }
+.bar { flex: 1; height: 12px; border-radius: 6px; background: #2A3140; overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 6px; background: var(--ok); }
+.label { color: var(--sub); font-size: 17px; }
+.modes { display: flex; gap: 8px; }
+.modes button { flex: 1; padding: 8px 6px; border-radius: 12px; background: #222A36; color: #9FB3C8; font-size: 15px; font-weight: 700; white-space: nowrap; }
+.modes button.sel { background: var(--accent); color: #fff; }
+.stick { color: var(--warn); font-weight: 700; }
+.driving .setup { display: none; }
+
+.center { width: 250px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; }
+.mic { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #3B8CFF, #1F5FCC); display: grid; place-items: center; box-shadow: 0 0 0 12px rgba(47,128,237,.15); transition: box-shadow .2s, transform .2s; }
+.mic.listening { box-shadow: 0 0 0 22px rgba(47,128,237,.35); transform: scale(1.05); }
+.bubble { min-height: 54px; font-size: 20px; line-height: 1.45; color: var(--fg); padding: 0 6px; }
+.bubble .who { display: block; font-size: 14px; color: var(--sub); margin-bottom: 2px; }
+.heard { color: var(--info); font-size: 19px; min-height: 26px; }
+
+.foot { height: 56px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-top: 1px solid var(--line2); color: var(--sub); font-size: 18px; }
+.foot b { color: var(--fg); }
+
+/* 시나리오 주입 패널 (시연용) */
+.panel { width: 290px; flex: none; border-left: 1px dashed #34404F; padding: 16px 16px; overflow-y: auto; background: #0B0E12; }
+.panel h3 { font-size: 15px; color: var(--warn); font-weight: 800; }
+.panel .why { font-size: 12.5px; color: var(--sub); line-height: 1.45; margin: 4px 0 10px; }
+.panel h4 { font-size: 13px; color: var(--sub); margin: 12px 0 6px; font-weight: 700; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.panel button { background: #1A212B; border: 1px solid #2A3442; border-radius: 10px; padding: 9px 8px; font-size: 14px; font-weight: 700; color: var(--sub2); text-align: center; }
+.panel button:active { background: #24303F; }
+.panel button.say { text-align: left; color: var(--info); }
+.events { margin-top: 12px; font-size: 12.5px; color: var(--sub); line-height: 1.5; }
+.events div { border-top: 1px solid #1C222C; padding: 4px 0; }
+.events span { color: #5D6878; margin-right: 6px; }
+.src { font-size: 11.5px; color: #5D6878; margin-top: 8px; line-height: 1.5; }
+.panel.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="status">
+  <div class="app"><span class="dot" id="relaydot"></span>앞만봐</div>
+  <div class="mode" id="mode"><span class="gearbox" id="gear">P</span><span id="modetext">정차 중 · 좌석 설정 가능</span></div>
+  <div id="clock">--:--</div>
+</div>
+
+<div class="main">
+  <div class="body" id="body">
+    <div class="card tcard" id="card-left"></div>
+    <div class="center">
+      <div><div class="label">목적지까지</div><div style="font-size:34px;font-weight:800">1시간 52분</div></div>
+      <button class="mic" id="mic" aria-label="음성 명령"><svg width="60" height="60" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg></button>
+      <div class="heard" id="heard">"첫째 거 다음 편"</div>
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <div class="card tcard" id="card-right"></div>
+  </div>
+
+  <div class="panel" id="panel">
+    <h3>시나리오 주입 패널 (시연용)</h3>
+    <p class="why">Virtual Console에 2열 벨트 카드가 없어, Vehicle SDK 콜백과 같은 규칙 엔진 함수를 직접 호출합니다. 실차에서는 같은 API로 동작합니다.</p>
+    <h4>첫째 (2열 왼쪽)</h4>
+    <div class="grid2"><button onclick="Car.belt('left',true)">벨트 매기</button><button onclick="Car.belt('left',false)">벨트 풀기</button>
+      <button onclick="Car.door('left',true)">뒷문 열기</button><button onclick="Car.door('left',false)">뒷문 닫기</button></div>
+    <h4>둘째 (2열 오른쪽)</h4>
+    <div class="grid2"><button onclick="Car.belt('right',true)">벨트 매기</button><button onclick="Car.belt('right',false)">벨트 풀기</button>
+      <button onclick="Car.door('right',true)">뒷문 열기</button><button onclick="Car.door('right',false)">뒷문 닫기</button></div>
+    <h4>기어</h4>
+    <div class="grid2"><button onclick="Car.gear('P')">P 정차</button><button onclick="Car.gear('D')">D 주행</button></div>
+    <h4>음성 (인식 결과 주입)</h4>
+    <div style="display:grid;gap:6px">
+      <button class="say" onclick="Car.say('첫째 거 다음 편')">"첫째 거 다음 편"</button>
+      <button class="say" onclick="Car.say('둘째 거 다음 편')">"둘째 거 다음 편"</button>
+      <button class="say" onclick="Car.say('첫째 소리 줄여')">"첫째 소리 줄여"</button>
+      <button class="say" onclick="Car.say('둘 다 멈춰')">"둘 다 멈춰"</button>
+      <button class="say" onclick="Car.say('응, 틀어줘')">"응, 틀어줘"</button>
+      <button class="say" onclick="Car.say('얼마나 남았어?')">"얼마나 남았어?"</button>
+    </div>
+    <div class="grid2" style="margin-top:10px"><button onclick="Car.reset()">오늘 기록 초기화</button><button onclick="togglePanel()">패널 숨기기</button></div>
+    <div class="events" id="events"></div>
+    <div class="src" id="src"></div>
+  </div>
+</div>
+
+<div class="foot"><span id="foot-left">정차 중에만 좌석 설정을 바꿀 수 있어요</span><span id="foot-right"></span></div>
+
+<script>
+const $ = id => document.getElementById(id);
+setInterval(() => { const d = new Date(); $("clock").textContent = d.toTimeString().slice(0, 5); }, 1000);
+
+function togglePanel() { $("panel").classList.toggle("hidden"); }
+// 상태 줄의 앱 이름을 길게 누르면 패널 다시 보이기
+$("relaydot").parentElement.addEventListener("click", () => $("panel").classList.remove("hidden"));
+
+$("mic").onclick = () => {
+  const ok = window.Car && Car.mic();
+  if (!ok) { $("heard").textContent = "차량 음성 인식을 쓸 수 없어요 · 패널의 음성 버튼으로 시연"; }
+};
+window.onListening = on => { $("mic").classList.toggle("listening", on); if (on) $("heard").textContent = "듣고 있어요…"; };
+window.onPartial = t => { $("heard").textContent = `"${t}"`; };
+window.onSpeak = t => { $("bubble").innerHTML = `<span class="who">앞만봐</span>${t}`; };
+
+function beltPill(s) {
+  if (s.door) return `<span class="pill warn">문 열림</span>`;
+  if (s.mode === "carseat") return s.state === "play" ? `<span class="pill ok">● 카시트 · 부모 확인</span>` : `<span class="pill mute">카시트 · 확인 대기</span>`;
+  if (s.belt === true) return `<span class="pill ok">● 벨트 착용</span>`;
+  if (s.belt === false) return `<span class="pill bad">○ 벨트 풀림</span>`;
+  return `<span class="pill mute">벨트 확인 중</span>`;
+}
+function stateText(s) {
+  if (!s.connected) return "태블릿 연결 대기";
+  const t = s.title ? ` · ${s.title}` : "";
+  return { play: "▶ 재생 중", lock: "■ 잠금 (벨트 매면 재생)", pause: "Ⅱ 일시정지", wait: "대기", end: "종료" }[s.state] + (s.state === "play" ? t : "");
+}
+function card(s, gear) {
+  const b = s.battery;
+  const low = b != null && !s.charging && b < s.need;
+  const color = b == null ? "#2A3140" : low ? "var(--warn)" : "var(--ok)";
+  return `
+    <div class="top"><span class="seat">${s.side} · ${s.mode === "booster" ? "부스터" : "카시트"}</span>${beltPill(s)}</div>
+    <div class="name">${s.name}</div>
+    <div class="now">${stateText(s)}</div>
+    <div class="batt"><b style="color:${color}">${b == null ? "--" : b + "%"}</b><div class="bar"><i style="width:${b || 0}%;background:${color}"></i></div></div>
+    <div class="label">${s.connected ? (s.charging ? "⚡ 충전 중 · 도착까지 충분해요" : (low ? "⚠ 도착 전에 꺼질 수 있어요 · 충전해 주세요" : "도착까지 충분해요")) : "태블릿에서 앞만봐 앱을 켜 주세요"}</div>
+    <div class="label">벨트 스티커 <span class="stick">★ ${s.stickers}</span> / 10</div>
+    <div class="setup modes"><button class="${s.mode === "booster" ? "sel" : ""}" onclick="Car.mode('${s.id}','booster')">부스터</button><button class="${s.mode === "carseat" ? "sel" : ""}" onclick="Car.mode('${s.id}','carseat')">카시트</button></div>`;
+}
+
+window.render = st => {
+  const drive = st.gear === "D";
+  document.body.classList.toggle("driving", drive);
+  $("gear").textContent = st.gear;
+  $("mode").classList.toggle("drive", drive);
+  $("modetext").textContent = drive ? "주행 중 · 음성으로 말하세요" : "정차 중 · 좌석 설정 가능";
+  $("relaydot").classList.toggle("on", st.relay);
+  st.seats.forEach(s => {
+    const el = $("card-" + s.id);
+    el.innerHTML = card(s, st.gear);
+    el.classList.toggle("alert", s.mode === "booster" && s.belt === false && s.connected);
+  });
+  if (st.heard) $("heard").textContent = `"${st.heard}"`;
+  if (st.speech) $("bubble").innerHTML = `<span class="who">앞만봐</span>${st.speech}`;
+  $("foot-left").textContent = drive ? "주행 중에는 카드와 음성만 표시됩니다" : "정차 중에만 좌석 설정을 바꿀 수 있어요";
+  $("foot-right").innerHTML = `오늘 대신 챙긴 일 <b>${st.auto + st.voice}번</b> (자동 ${st.auto}, 음성 ${st.voice}) · 스스로 맨 벨트 <b>${st.selfBuckled}번</b>`;
+  $("events").innerHTML = st.events.map(e => `<div><span>${e.t}</span>${e.text}</div>`).join("");
+  const srcs = Object.entries(st.sources || {}).map(([k, v]) => `${k}: ${v}`).join(" · ");
+  const stat = Object.values(st.status || {}).join("<br>");
+  $("src").innerHTML = `${stat}${srcs ? "<br>신호 출처 · " + srcs : ""}<br>중계 서버: ${st.relay ? "연결됨" : "연결 대기"}`;
+};
+</script>
+</body>
+</html>
