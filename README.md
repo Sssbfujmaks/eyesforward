@@ -3,7 +3,7 @@
 **아이가 벨트를 매야 영상이 켜지고, 풀면 멈춥니다.**
 차량 신호로 뒷좌석 아이의 안전을 챙기고, 운전자는 뒤돌아보지 않고 앞만 보게 하는 Pleos Connect 패밀리 안전 앱입니다.
 
-- 시연 영상 (2분): [media/앞만봐_시연.mp4](media/앞만봐_시연.mp4)
+- 시연 영상 (2분, 바로 재생): https://sssbfujmaks.github.io/eyesforward/ (파일: [media/앞만봐_시연.mp4](media/앞만봐_시연.mp4))
 - APK: [apk/앞만봐_앞만봐_release.apk](apk/) (차량 앱), [apk/앞만봐_태블릿_release.apk](apk/) (태블릿 앱)
 
 ## 무엇을 하나요
